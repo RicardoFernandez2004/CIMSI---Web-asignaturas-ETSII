@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # --------------------------------------------------------
+  # 1. Base de Datos de Autenticación
+  # --------------------------------------------------------
+  auth-db:
+    image: mariadb:11.2
+    container_name: auth_db_container
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root_auth_secret
+      MARIADB_DATABASE: auth_db
+      MARIADB_USER: auth_user
+      MARIADB_PASSWORD: auth_user_secret
+    ports:
+      - "3306:3306"
+    volumes:
+      # Persistencia de datos en disco host
+      - auth_data:/var/lib/mysql
+      # Script DDL de inicialización (solo se ejecuta la primera vez)
+      - ./init-scripts/init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
+
+  # --------------------------------------------------------
+  # 2. Base de Datos Académica
+  # --------------------------------------------------------
+  academic-db:
+    image: mariadb:11.2
+    container_name: academic_db_container
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root_academic_secret
+      MARIADB_DATABASE: academic_db
+      MARIADB_USER: academic_user
+      MARIADB_PASSWORD: academic_user_secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - academic_data:/var/lib/mysql
+      - ./init-scripts/init_academic.sql:/docker-entrypoint-initdb.d/init_academic.sql:ro
+
+  # --------------------------------------------------------
+  # 3. Base de Datos de Feedback
+  # --------------------------------------------------------
+  feedback-db:
+    image: mariadb:11.2
+    container_name: feedback_db_container
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root_feedback_secret
+      MARIADB_DATABASE: feedback_db
+      MARIADB_USER: feedback_user
+      MARIADB_PASSWORD: feedback_user_secret
+    ports:
+      - "3308:3306"
+    volumes:
+      - feedback_data:/var/lib/mysql
+      - ./init-scripts/init_feedback.sql:/docker-entrypoint-initdb.d/init_feedback.sql:ro
+
+# --------------------------------------------------------
+# Declaración de Volúmenes Persistentes (Gestión por Docker)
+# --------------------------------------------------------
+volumes:
+  auth_data:
+    driver: local
+  academic_data:
+    driver: local
+  feedback_data:
+    driver: local
