@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # CAPA DE PERSISTENCIA (3 BBDD PostgreSQL)
+  # Perfiles: db, full
+  # ==========================================
+  auth-db:
+    image: postgres:15-alpine
+    container_name: auth-db
+    restart: always
+    profiles: ["db", "full"]
+    environment:
+      POSTGRES_DB: ${AUTH_DB_NAME:-auth_db}
+      POSTGRES_USER: ${POSTGRES_USER:-cimsi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password}
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+      - ../backend/persistencia/init_auth.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cimsi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cimsi_user} -d ${AUTH_DB_NAME:-auth_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  academic-db:
+    image: postgres:15-alpine
+    container_name: academic-db
+    restart: always
+    profiles: ["db", "full"]
+    environment:
+      POSTGRES_DB: ${ACADEMIC_DB_NAME:-academic_db}
+      POSTGRES_USER: ${POSTGRES_USER:-cimsi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password}
+    volumes:
+      - academic_db_data:/var/lib/postgresql/data
+      - ../backend/persistencia/init_academic.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cimsi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cimsi_user} -d ${ACADEMIC_DB_NAME:-academic_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  feedback-db:
+    image: postgres:15-alpine
+    container_name: feedback-db
+    restart: always
+    profiles: ["db", "full"]
+    environment:
+      POSTGRES_DB: ${FEEDBACK_DB_NAME:-feedback_db}
+      POSTGRES_USER: ${POSTGRES_USER:-cimsi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password}
+    volumes:
+      - feedback_db_data:/var/lib/postgresql/data
+      - ../backend/persistencia/init_feedback.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cimsi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cimsi_user} -d ${FEEDBACK_DB_NAME:-feedback_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # CAPA DE BACKEND (Microservicios FastAPI)
+  # Perfiles: backend, full
+  # ==========================================
+  auth-service:
+    build:
+      context: ../backend
+      dockerfile: Auth/Dockerfile
+    container_name: auth-service
+    restart: always
+    profiles: ["backend", "full"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cimsi_user}:${POSTGRES_PASSWORD:-secure_password}@auth-db:5432/${AUTH_DB_NAME:-auth_db}
+      JWT_SECRET: ${JWT_SECRET:-secret_jwt_key}
+      JWT_ALGORITHM: HS256
+    ports:
+      - "8001:8000"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - cimsi-net
+
+  academic-service:
+    build:
+      context: ../backend
+      dockerfile: Academic/Dockerfile
+    container_name: academic-service
+    restart: always
+    profiles: ["backend", "full"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cimsi_user}:${POSTGRES_PASSWORD:-secure_password}@academic-db:5432/${ACADEMIC_DB_NAME:-academic_db}
+    ports:
+      - "8002:8000"
+    depends_on:
+      academic-db:
+        condition: service_healthy
+    networks:
+      - cimsi-net
+
+  feedback-service:
+    build:
+      context: ../backend
+      dockerfile: Feedback/Dockerfile
+    container_name: feedback-service
+    restart: always
+    profiles: ["backend", "full"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cimsi_user}:${POSTGRES_PASSWORD:-secure_password}@feedback-db:5432/${FEEDBACK_DB_NAME:-feedback_db}
+      JWT_SECRET: ${JWT_SECRET:-secret_jwt_key}
+    ports:
+      - "8003:8000"
+    depends_on:
+      feedback-db:
+        condition: service_healthy
+    networks:
+      - cimsi-net
+
+# ==========================================
+# REDES Y VOLÚMENES PERSISTENTES
+# ==========================================
+networks:
+  cimsi-net:
+    driver: bridge
+
+volumes:
+  auth_db_data:
+  academic_db_data:
+  feedback_db_data:
