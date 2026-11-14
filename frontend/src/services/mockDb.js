@@ -1,38 +1,19 @@
-// =============================================================================
-// mockDb.js — "Backend falso" para trabajar mientras el backend real no existe.
-//
-// - Los datos tienen EXACTAMENTE el formato de los contratos (docs/contratos/).
-// - Los UUID son los mismos que los de los scripts SQL (backend/init-scripts/),
-//   así la demo se verá igual cuando conectemos el backend real.
-// - Todo vive en memoria: si recargas la página, se pierden los cambios.
-//
-// Ningún componente debe importar este archivo directamente: se usa SOLO desde
-// services/api.js.
-// =============================================================================
-
-// Simula el tiempo que tarda una petición por la red (300 ms)
 const wait = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Crea un error con código HTTP, igual que los que lanza api.js con el backend real
+
 function httpError(status, message) {
   const error = new Error(message);
   error.status = status;
   return error;
 }
 
-// -----------------------------------------------------------------------------
-// DATOS — Auth Service (usuarios)
-// En el mock guardamos la contraseña en claro SOLO para poder probar el login.
-// -----------------------------------------------------------------------------
 const users = [
   { id: '11111111-0000-0000-0000-000000000001', email: 'student1@alum.us.es', password: '1234', name: 'Carlos', surname: 'Gómez Ruiz', date_of_birth: '2001-05-14', role: 'student' },
   { id: '11111111-0000-0000-0000-000000000002', email: 'student2@alum.us.es', password: '1234', name: 'Ana', surname: 'Martínez Silva', date_of_birth: '2002-11-20', role: 'student' },
   { id: '11111111-0000-0000-0000-000000000004', email: 'admin@us.es', password: '1234', name: 'Admin', surname: 'System', date_of_birth: '1990-01-01', role: 'admin' },
 ];
 
-// -----------------------------------------------------------------------------
-// DATOS — Academic Service (grados y asignaturas)
-// -----------------------------------------------------------------------------
+
 const degrees = [
   { id: '22222222-0000-0000-0000-000000000410', code: 'G410', name: 'Ingeniería Informática – Ingeniería del Software', department: 'Lenguajes y Sistemas Informáticos', duration_years: 4 },
   { id: '22222222-0000-0000-0000-000000000420', code: 'G420', name: 'Ingeniería Informática – Ingeniería de Computadores', department: 'Arquitectura y Tecnología de Computadores', duration_years: 4 },
@@ -46,20 +27,14 @@ const subjects = [
   { id: '33333333-0000-0000-0000-000000000005', code: '2050022', name: 'Redes de Computadores', academic_year: 2, semester: 2, ects: 6, degree_id: '22222222-0000-0000-0000-000000000420' },
 ];
 
-// -----------------------------------------------------------------------------
-// DATOS — Feedback Service (reseñas)
-// -----------------------------------------------------------------------------
+
 const reviews = [
   { id: '55555555-0000-0000-0000-000000000001', subject_id: '33333333-0000-0000-0000-000000000002', student_grade: 8, general_rating: 5, difficulty_rating: 3, teaching_rating: 5, comments: 'Muy buena asignatura; los modelos relacionales quedan muy bien explicados.', is_anonymous: false, student_id: '11111111-0000-0000-0000-000000000001', created_at: '2026-11-01T10:00:00Z', updated_at: '2026-11-01T10:00:00Z' },
   { id: '55555555-0000-0000-0000-000000000002', subject_id: '33333333-0000-0000-0000-000000000003', student_grade: 7, general_rating: 4, difficulty_rating: 4, teaching_rating: 5, comments: 'Contenido interesante sobre contenedores en Docker, pero hay que echarle horas.', is_anonymous: false, student_id: '11111111-0000-0000-0000-000000000002', created_at: '2026-11-03T12:30:00Z', updated_at: '2026-11-03T12:30:00Z' },
   { id: '55555555-0000-0000-0000-000000000003', subject_id: '33333333-0000-0000-0000-000000000002', student_grade: 6, general_rating: 3, difficulty_rating: 4, teaching_rating: 3, comments: 'Las prácticas de SQL ayudan mucho, pero el examen es largo.', is_anonymous: true, student_id: null, created_at: '2026-11-05T09:15:00Z', updated_at: '2026-11-05T09:15:00Z' },
 ];
 
-// -----------------------------------------------------------------------------
-// TOKEN FALSO
-// El backend real devolverá un JWT firmado. Aquí usamos "mock-token.<id>" para
-// saber qué usuario ha iniciado sesión.
-// -----------------------------------------------------------------------------
+
 function userFromToken(token) {
   const id = token?.startsWith('mock-token.') ? token.slice('mock-token.'.length) : null;
   const user = users.find((u) => u.id === id);
@@ -67,13 +42,9 @@ function userFromToken(token) {
   return user;
 }
 
-// Quita la contraseña antes de devolver un usuario (el backend real nunca la envía)
-// eslint-disable-next-line no-unused-vars
+
 const publicUser = ({ password, ...rest }) => rest;
 
-// =============================================================================
-// FUNCIONES — una por endpoint de los contratos
-// =============================================================================
 
 // POST /api/auth/login
 export async function login(email, password) {
@@ -126,8 +97,7 @@ export async function getReviews({ subject_id, student_id } = {}) {
   await wait();
   return reviews
     .filter((r) => (!subject_id || r.subject_id === subject_id) && (!student_id || r.student_id === student_id))
-    // eslint-disable-next-line no-unused-vars
-    .map(({ author_id, ...review }) => review); // el campo interno author_id no se devuelve
+    .map(({ author_id, ...review }) => review); 
 }
 
 // POST /api/feedback/reviews
@@ -143,7 +113,7 @@ export async function createReview(token, data) {
     ...data,
     id: crypto.randomUUID(),
     student_id: data.is_anonymous ? null : user.id,
-    author_id: user.id, // solo en el mock, para saber quién la escribió aunque sea anónima
+    author_id: user.id,
     created_at: now,
     updated_at: now,
   };
