@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS subject_teacher (
  PRIMARY KEY (professor_id, subject_id), 
  FOREIGN KEY (professor_id) REFERENCES professors(id) ON DELETE CASCADE, 
  FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE, 
- INDEX idx_teacher_subject_teacher (professor_id), 
- INDEX idx_teacher_subject_teacher (subject_id) );
+ INDEX idx_st_professor (professor_id), 
+ INDEX idx_st_subject (subject_id) );
 
 -- --------------------------------------------------------
 -- Degrees seed data
@@ -69,7 +69,7 @@ INSERT INTO subjects (id, degree_id, code, name, academic_year, semester, ects) 
 -- --------------------------------------------------------
 INSERT INTO professors (id, name, surname, email, department) VALUES
 ('44444444-0000-0000-0000-000000000001', 'María del Carmen', 'Romero Ternero', 'mcromero@us.es', 'Arquitectura y Tecnología de Computadores'),
-('44444444-0000-0000-0000-000000000002', 'Manuel', 'Resinas Díaz', 'resinas@us.es', 'Lenguajes y Sisttemás Informáticos');
+('44444444-0000-0000-0000-000000000002', 'Manuel', 'Resinas Díaz', 'resinas@us.es', 'Lenguajes y Sistemas Informáticos');
 
 -- --------------------------------------------------------
 -- N:M Relationship: Subject - Professor

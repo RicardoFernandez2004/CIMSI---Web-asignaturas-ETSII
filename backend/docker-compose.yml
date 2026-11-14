@@ -19,7 +19,7 @@ services:
       # Persistencia de datos en disco host
       - auth_data:/var/lib/mysql
       # Script DDL de inicialización (solo se ejecuta la primera vez)
-      - ./init-scripts/init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
+      - ./init-scripts/auth_db.sql:/docker-entrypoint-initdb.d/auth_db.sql:ro
 
   # --------------------------------------------------------
   # 2. Base de Datos Académica
@@ -37,7 +37,7 @@ services:
       - "3307:3306"
     volumes:
       - academic_data:/var/lib/mysql
-      - ./init-scripts/init_academic.sql:/docker-entrypoint-initdb.d/init_academic.sql:ro
+      - ./init-scripts/academic_db.sql:/docker-entrypoint-initdb.d/academic_db.sql:ro
 
   # --------------------------------------------------------
   # 3. Base de Datos de Feedback
@@ -55,7 +55,7 @@ services:
       - "3308:3306"
     volumes:
       - feedback_data:/var/lib/mysql
-      - ./init-scripts/init_feedback.sql:/docker-entrypoint-initdb.d/init_feedback.sql:ro
+      - ./init-scripts/feedback_db.sql:/docker-entrypoint-initdb.d/feedback_db.sql:ro
 
 # --------------------------------------------------------
 # Declaración de Volúmenes Persistentes (Gestión por Docker)
