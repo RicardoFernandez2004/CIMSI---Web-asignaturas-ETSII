@@ -1,6 +1,6 @@
-# Guía de Flujo de Trabajo en Git y Organización del Repositorio Único (Proyecto CIMSI)
+# Guía de Flujo de Trabajo en Git, Despliegue con Docker y Organización del Repositorio Único (Proyecto CIMSI)
 
-Esta guía establece el estándar operativo de control de versiones y organización del código para los ocho integrantes del Proyecto CIMSI. Con el fin de evitar conflictos de fusión, garantizar el aislamiento de componentes y mantener la trazabilidad del trabajo individual, el proyecto se estructura en torno a un único repositorio en GitHub dividido en cuatro áreas funcionales y cuatro ramas de desarrollo paralelas.
+Esta guía establece el estándar operativo de control de versiones, despliegue con Docker Compose y organización del código para los ocho integrantes del Proyecto CIMSI. Con el fin de evitar conflictos de fusión, garantizar el aislamiento de componentes y mantener la trazabilidad del trabajo individual, el proyecto se estructura en torno a un único repositorio en GitHub dividido en cuatro áreas funcionales, cuatro ramas de desarrollo paralelas y un esquema modular de despliegue.
 
 ---
 
@@ -28,7 +28,7 @@ El trabajo paralelo se gestiona a través de cuatro ramas secundarias alineadas 
 
 ---
 
-## 3. Protocolo de Trabajo Diario
+## 3. Protocolo de Trabajo Diario en Git
 
 Cada sesión de desarrollo debe seguir una secuencia estricta de comandos en terminal para garantizar que el código local esté siempre sincronizado con el repositorio remoto en GitHub.
 
@@ -79,7 +79,42 @@ La rama `main` representa el estado estable del sistema y únicamente se actuali
 
 ---
 
-## 5. Gestión de Credenciales y Seguridad (.env)
+## 5. Buenas Prácticas de Despliegue con Docker Compose y Perfiles (`profiles`)
+
+Para permitir tanto el desarrollo completo en local como el despliegue distribuido en las 4 Máquinas Virtuales sobre Proxmox VE sin duplicar archivos de configuración, se utiliza un archivo unificado ubicado en `/infra/docker-compose.yml`.
+
+### Resolución de Rutas Relativas
+* Docker Compose resuelve las rutas relativas en función de la ubicación del propio fichero `docker-compose.yml` (`/infra/`), no del directorio desde donde se lanza la terminal.
+* Por ello, las referencias al backend utilizan `../backend` como contexto de compilación (ej. `context: ../backend`) y `../backend/persistencia/init_auth.sql` para los scripts de inicio SQL.
+
+### Uso de Perfiles (`profiles`) para Despliegue por Nodos
+El archivo define tres perfiles principales para modularizar la ejecución:
+
+* **Despliegue de la Capa de Persistencia (MV 3 - IP `10.0.0.12`):**
+  ```bash
+  docker compose --profile db up -d
+  ```
+  *(Inicia únicamente los contenedores PostgreSQL: `auth-db`, `academic-db` y `feedback-db`).*
+
+* **Despliegue de la Capa de Backend (MV 2 - IP `10.0.0.11` y MV 4 - IP `10.0.0.13`):**
+  ```bash
+  docker compose --profile backend up -d
+  ```
+  *(Inicia únicamente los microservicios FastAPI: `auth-service`, `academic-service` y `feedback-service`).*
+
+* **Despliegue Completo en Desarrollo Local (Todos los componentes):**
+  ```bash
+  docker compose --profile full up -d
+  ```
+  *(Inicia la arquitectura completa dentro de una sola máquina para pruebas de integración).*
+
+### Tolerancia a Fallos y Valores por Defecto
+* **Variables con fallback:** Los parámetros de entorno usan la sintaxis `${VARIABLE:-default}` (ejemplo: `${POSTGRES_USER:-cimsi_user}`), lo que asegura que los contenedores arranquen aunque no exista el archivo `.env` en local.
+* **Comprobaciones de salud (`healthcheck`):** Los microservicios esperan a que las bases de datos reporten estado saludable (`service_healthy`) antes de iniciar, evitando caídas por fallos de conexión al arrancar.
+
+---
+
+## 6. Gestión de Credenciales y Seguridad (.env)
 
 Para evitar la filtración accidental de claves y contraseñas en el repositorio público de GitHub, el equipo debe aplicar las siguientes políticas de seguridad:
 
@@ -89,9 +124,9 @@ Para evitar la filtración accidental de claves y contraseñas en el repositorio
 
 ---
 
-## 6. Resolución de Conflictos y Buenas Prácticas
+## 7. Resolución de Conflictos
 
-En caso de que dos integrantes modifiquen un mismo archivo simultáneamente y se produzca un conflicto durante el `git pull` o `git merge`:
+En caso de que se produzca un conflicto durante el `git pull` o `git merge`:
 
 1. Identifique los archivos en conflicto reportados por Git en la consola.
 2. Abra cada fichero afectado y examine las marcas de conflicto (`<<<<<<< HEAD`, `=======`, `>>>>>>>`).
