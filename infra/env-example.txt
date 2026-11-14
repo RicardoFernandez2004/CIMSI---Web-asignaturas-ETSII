@@ -1,0 +1,40 @@
+# ==============================================================================
+# PLANTILLA DE VARIABLES DE ENTORNO - PROYECTO CIMSI (.env.example)
+# ==============================================================================
+# Instrucciones:
+# 1. Copia este archivo y renómbralo a '.env' en tu entorno local.
+# 2. Reemplaza las contraseñas y claves secretas por valores reales y seguros.
+# 3. NUNCA subas el archivo '.env' real al repositorio Git (está en .gitignore).
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. CREDENCIALES GENERALES DE POSTGRESQL
+# ------------------------------------------------------------------------------
+POSTGRES_USER=cimsi_user
+POSTGRES_PASSWORD=secure_password_cimsi_2026
+
+# ------------------------------------------------------------------------------
+# 2. NOMBRES DE LAS BASES DE DATOS DE LOS MICROSERVICIOS
+# ------------------------------------------------------------------------------
+AUTH_DB_NAME=auth_db
+ACADEMIC_DB_NAME=academic_db
+FEEDBACK_DB_NAME=feedback_db
+
+# ------------------------------------------------------------------------------
+# 3. SEGURIDAD Y AUTENTICACIÓN (JWT TOKENS)
+# ------------------------------------------------------------------------------
+JWT_SECRET=super_secret_jwt_key_cimsi_2026
+JWT_ALGORITHM=HS256
+
+# ------------------------------------------------------------------------------
+# 4. CONFIGURACIÓN DE RED Y DESPLIEGUE DISTRIBUIDO (PROXMOX MVs)
+# ------------------------------------------------------------------------------
+# En local (1 sola máquina con 'docker compose --profile full up'):
+# Los microservicios se conectan internamente usando los nombres del Compose (auth-db, academic-db, feedback-db).
+#
+# En producción distribuida (4 MVs en Proxmox):
+# MV 1 (Gateway/Frontend): 10.0.0.10
+# MV 2 (Backend Services): 10.0.0.11
+# MV 3 (Persistencia PostgreSQL): 10.0.0.12
+# MV 4 (Nodo Réplica Feedback): 10.0.0.13
+PERSISTENCE_MV_IP=10.0.0.12
