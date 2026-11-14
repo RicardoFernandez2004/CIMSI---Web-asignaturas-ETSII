@@ -22,8 +22,7 @@
     "password": "PasswordSicura123!",
     "name": "Mario",
     "surname": "Rossi",
-    "date_of_birth": "1998-05-14",
-    "role": "student" 
+    "date_of_birth": "1998-05-14"
   }
   ```
 * **Respuestas:**
@@ -35,8 +34,7 @@
         "email": "mario.rossi@alum.us.es",
         "name": "Mario",
         "surname": "Rossi",
-        "date_of_birth": "1998-05-14",
-        "role": "student",
+        "date_of_birth": "1998-05-14"
         "created_at": "2026-11-12T19:14:00Z"
       },
       "token": {
