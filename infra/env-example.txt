@@ -33,8 +33,9 @@ JWT_ALGORITHM=HS256
 # Los microservicios se conectan internamente usando los nombres del Compose (auth-db, academic-db, feedback-db).
 #
 # En producción distribuida (4 MVs en Proxmox):
-# MV 1 (Gateway/Frontend): 10.0.0.10
-# MV 2 (Backend Services): 10.0.0.11
-# MV 3 (Persistencia PostgreSQL): 10.0.0.12
-# MV 4 (Nodo Réplica Feedback): 10.0.0.13
-PERSISTENCE_MV_IP=10.0.0.12
+# MV 1 (Gateway/Frontend): 192.168.120.54
+# MV 2 (Backend Services): 192.168.120.58
+# MV 3 (Persistencia MariaDB): 192.168.120.62
+# MV 4 (Nodo Réplica Feedback): 192.168.120.66
+PERSISTENCE_MV_IP=192.168.120.62
+
