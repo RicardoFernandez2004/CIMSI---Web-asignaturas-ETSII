@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -64,6 +65,8 @@ export default function Login() {
           {sending ? 'Entrando…' : 'Iniciar Sesión'}
         </button>
       </form>
+
+      <p>¿No tienes cuenta? <Link to="/registro">Regístrate</Link></p>
 
       <p style={{ marginTop: '30px', fontSize: '0.85em', color: '#666' }}>
         Usuarios de prueba (contraseña 1234): student1@alum.us.es · admin@us.es

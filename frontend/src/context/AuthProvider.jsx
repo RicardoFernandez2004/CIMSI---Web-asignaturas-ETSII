@@ -20,14 +20,17 @@ export default function AuthProvider({ children }) {
     setUser(await api.getMe());
   }
 
+    async function register(userData) {
+    await api.register(userData);
+    setUser(await api.getMe());
+  }
+
   function logout() {
     api.logout();
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, checking, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+       <AuthContext.Provider value={{ user, checking, login, register, logout }}></AuthContext.Provider>
   );
 }
