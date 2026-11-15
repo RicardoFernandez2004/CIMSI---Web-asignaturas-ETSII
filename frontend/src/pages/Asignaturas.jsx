@@ -3,25 +3,38 @@ import { Link } from 'react-router-dom';
 import { getDegrees, getSubjects } from '../services/api';
 
 export default function Asignaturas() {
-  // Estado de la pantalla: los datos, si está cargando y si hubo un error
   const [subjects, setSubjects] = useState([]);
   const [degrees, setDegrees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [degreeId, setDegreeId] = useState('');
+  const [year, setYear] = useState('');
 
-  // Al abrir la pantalla, pedimos asignaturas y grados a la API (a la vez)
+    useEffect(() => {
+    getDegrees()
+      .then(setDegrees)
+      .catch((err) => setError(err.message));
+  }, []);
+
   useEffect(() => {
-    Promise.all([getSubjects(), getDegrees()])
-      .then(([subjectsData, degreesData]) => {
-        setSubjects(subjectsData);
-        setDegrees(degreesData);
+    let active = true;
+    getSubjects({ degree_id: degreeId, academic_year: year })
+      .then((data) => {
+        if (active) setSubjects(data);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [degreeId, year]);
 
-  // La asignatura solo trae degree_id: buscamos el nombre del grado
   const degreeName = (degreeId) => degrees.find((d) => d.id === degreeId)?.name ?? '—';
+
+    function clearFilters() {
+    setDegreeId('');
+    setYear('');
+  }
 
   if (loading) return <p style={{ padding: '40px' }}>Cargando asignaturas…</p>;
   if (error) return <p style={{ padding: '40px', color: 'crimson' }}>No se pudieron cargar las asignaturas: {error}</p>;
@@ -29,6 +42,36 @@ export default function Asignaturas() {
   return (
     <div style={{ padding: '40px', fontFamily: 'sans-serif' }}>
       <h2>Catálogo de Asignaturas</h2>
+            <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-end', marginBottom: '20px', flexWrap: 'wrap' }}>
+        <label style={{ display: 'flex', flexDirection: 'column' }}>
+          Grado
+          <select value={degreeId} onChange={(e) => setDegreeId(e.target.value)} style={{ padding: '8px' }}>
+            <option value="">Todos los grados</option>
+            {degrees.map((degree) => (
+              <option key={degree.id} value={degree.id}>{degree.name}</option>
+            ))}
+          </select>
+        </label>
+
+        <label style={{ display: 'flex', flexDirection: 'column' }}>
+          Curso
+          <select value={year} onChange={(e) => setYear(e.target.value)} style={{ padding: '8px' }}>
+            <option value="">Todos los cursos</option>
+            {[1, 2, 3, 4].map((n) => (
+              <option key={n} value={n}>{n}º</option>
+            ))}
+          </select>
+        </label>
+
+        {(degreeId || year) && (
+          <button onClick={clearFilters} style={{ padding: '8px 12px', cursor: 'pointer' }}>
+            Quitar filtros
+          </button>
+        )}
+      </div>
+
+      <p style={{ color: '#555' }}>{subjects.length} asignaturas</p>
+      {subjects.length === 0 && <p>No hay asignaturas con estos filtros.</p>}
       <div style={{ display: 'grid', gap: '15px' }}>
         {subjects.map((subject) => (
           <div key={subject.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '5px' }}>
