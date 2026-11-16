@@ -1,17 +1,44 @@
-CREATE DATABASE IF NOT EXISTS auth_db;
-USE auth_db;
-CREATE TABLE IF NOT EXISTS users ( 
- id UUID PRIMARY KEY DEFAULT UUID(), 
- email VARCHAR(255) UNIQUE NOT NULL, 
- hashed_password VARCHAR(255) NOT NULL, 
- name VARCHAR(100) NOT NULL, 
- surname VARCHAR(100) NOT NULL, 
- date_of_birth DATE NOT NULL, 
- role ENUM('student', 'professor', 'admin') NOT NULL DEFAULT 'student', 
- is_active BOOLEAN NOT NULL DEFAULT TRUE, 
- created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
- updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
- INDEX idx_users_email (email) );
+
+SELECT 'CREATE DATABASE auth_db'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'auth_db')\gexec
+
+\c auth_db
+
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+        CREATE TYPE user_role AS ENUM ('student', 'professor', 'admin');
+    END IF;
+END$$;
+
+-- 3. Crear la tabla
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    hashed_password VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    surname VARCHAR(100) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    role user_role NOT NULL DEFAULT 'student',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Función y Trigger para el updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trigger_users_updated_at
+    BEFORE UPDATE ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 
  -- --------------------------------------------------------
 -- Users seed data

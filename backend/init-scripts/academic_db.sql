@@ -1,53 +1,94 @@
-CREATE DATABASE IF NOT EXISTS academic_db;
-USE academic_db;
+
+SELECT 'CREATE DATABASE academic_db'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'academic_db')\gexec
+
+\c academic_db
+
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ==========================================
 -- Grados
-CREATE TABLE IF NOT EXISTS degrees ( 
- id UUID PRIMARY KEY DEFAULT UUID(),
- code VARCHAR(20) UNIQUE NOT NULL,
- name VARCHAR(255) NOT NULL,
- department VARCHAR(255) NOT NULL,
- duration_years TINYINT NOT NULL,
- created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
- updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP );
+-- ==========================================
+CREATE TABLE IF NOT EXISTS degrees (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    department VARCHAR(255) NOT NULL,
+    duration_years SMALLINT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
+CREATE OR REPLACE TRIGGER trigger_degrees_updated_at
+    BEFORE UPDATE ON degrees
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 
+-- ==========================================
 -- Asignaturas
-CREATE TABLE IF NOT EXISTS subjects ( 
- id UUID PRIMARY KEY DEFAULT UUID(),
- degree_id UUID NOT NULL, 
- code VARCHAR(20) UNIQUE NOT NULL,
- name VARCHAR(255) NOT NULL, 
- academic_year TINYINT NOT NULL CHECK(academic_year BETWEEN 1 AND 4), 
- semester TINYINT NOT NULL CHECK(semester IN (1, 2)), 
- ects TINYINT NOT NULL,
- 
- created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
- updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
- FOREIGN KEY (degree_id) REFERENCES degrees(id) ON DELETE CASCADE, 
- INDEX idx_subjects_degree (degree_id), 
- INDEX idx_subjects_code (code) );
+-- ==========================================
+CREATE TABLE IF NOT EXISTS subjects (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    degree_id UUID NOT NULL,
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    academic_year SMALLINT NOT NULL CHECK (academic_year BETWEEN 1 AND 4),
+    semester SMALLINT NOT NULL CHECK (semester IN (1, 2)),
+    ects SMALLINT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (degree_id) REFERENCES degrees(id) ON DELETE CASCADE
+);
 
+CREATE INDEX IF NOT EXISTS idx_subjects_degree ON subjects (degree_id);
+
+
+CREATE OR REPLACE TRIGGER trigger_subjects_updated_at
+    BEFORE UPDATE ON subjects
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- ==========================================
 -- Docentes
-CREATE TABLE IF NOT EXISTS professors ( 
- id UUID PRIMARY KEY DEFAULT UUID(), 
- name VARCHAR(100) NOT NULL, 
- surname VARCHAR(100) NOT NULL, 
- email VARCHAR(255) UNIQUE NOT NULL, 
- department VARCHAR(255) NOT NULL, 
- created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
- updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
- INDEX idx_teachers_email (email) );
+-- ==========================================
+CREATE TABLE IF NOT EXISTS professors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    surname VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    department VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
--- Relación N:M entre Profesores y Asignaturas 
-CREATE TABLE IF NOT EXISTS subject_teacher ( 
- professor_id UUID NOT NULL, 
- subject_id UUID NOT NULL, 
- created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
- PRIMARY KEY (professor_id, subject_id), 
- FOREIGN KEY (professor_id) REFERENCES professors(id) ON DELETE CASCADE, 
- FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE, 
- INDEX idx_st_professor (professor_id), 
- INDEX idx_st_subject (subject_id) );
+
+CREATE OR REPLACE TRIGGER trigger_professors_updated_at
+    BEFORE UPDATE ON professors
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- ==========================================
+-- Relación N:M entre Profesores y Asignaturas
+-- ==========================================
+CREATE TABLE IF NOT EXISTS subject_teacher (
+    professor_id UUID NOT NULL,
+    subject_id UUID NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (professor_id, subject_id),
+    FOREIGN KEY (professor_id) REFERENCES professors(id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+);
+
+-- Al tener PRIMARY KEY (professor_id, subject_id), las búsquedas por professor_id
+-- ya están cubiertas por el índice compuesto de la PK. Solo hace falta índice para la segunda columna:
+CREATE INDEX IF NOT EXISTS idx_st_subject ON subject_teacher (subject_id);
 
 -- --------------------------------------------------------
 -- Degrees seed data
