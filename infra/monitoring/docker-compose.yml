@@ -3,7 +3,9 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
       - prom_data:/prometheus
+    
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.enable-lifecycle'
@@ -14,6 +16,11 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     volumes: [grafana_data:/var/lib/grafana]
     ports: ["3000:3000"]
+  blackbox:
+    image: quay.io/prometheus/blackbox-exporter:latest
+    volumes: ["./blackbox/blackbox.yml:/config/blackbox.yml:ro"]
+    command: ['--config.file=/config/blackbox.yml']
+  
   node-exporter:
     image: prom/node-exporter:latest
     ports: ["9100:9100"]

@@ -1,0 +1,27 @@
+groups:
+  - name: cimsi
+    rules:
+      - alert: NodoCaido
+        expr: up == 0
+        for: 15s
+        labels: {severity: critical}
+        annotations:
+          summary: "Nodo {{ $labels.instance }} caído"
+      - alert: HealthcheckFalla
+        expr: probe_success == 0
+        for: 15s
+        labels: {severity: critical}
+        annotations:
+          summary: "Healthcheck fallido en {{ $labels.instance }}"
+      - alert: CPUAlta
+        expr: 100 - avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100 > 80
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "CPU > 80 % en {{ $labels.instance }}"
+      - alert: RAMAlta
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 85
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "RAM > 85 % en {{ $labels.instance }}"
