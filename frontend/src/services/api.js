@@ -11,9 +11,10 @@
 // =============================================================================
 import * as mock from './mockDb';
 
-// true  -> usa los datos simulados de mockDb.js
-// false -> llama al backend real
-const USE_MOCKS = true;
+// false (por defecto) -> llama al backend real
+// true                -> usa los datos simulados de mockDb.js
+// Para desarrollar sin backend, crea frontend/.env.local con:  VITE_USE_MOCKS=true
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 
 // -----------------------------------------------------------------------------
 // TOKEN JWT: se guarda en el navegador (localStorage) para no perder la sesión
@@ -24,6 +25,32 @@ const TOKEN_KEY = 'cimsi_token';
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 const saveToken = (token) => localStorage.setItem(TOKEN_KEY, token);
 const removeToken = () => localStorage.removeItem(TOKEN_KEY);
+
+// -----------------------------------------------------------------------------
+// Evento que se lanza cuando el backend responde 401 con una sesión abierta
+// (token caducado o inválido). AuthProvider lo escucha y cierra la sesión.
+// -----------------------------------------------------------------------------
+export const UNAUTHORIZED_EVENT = 'cimsi:unauthorized';
+
+// -----------------------------------------------------------------------------
+// extractErrorMessage(): FastAPI devuelve los errores como { "detail": ... }
+//  - 400/401/403/404/409: detail es un texto
+//  - 422 (validación):    detail es una lista [{ loc: [...], msg: "..." }, ...]
+// -----------------------------------------------------------------------------
+function extractErrorMessage(data, status) {
+  const detail = data?.detail;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail) && detail.length > 0) {
+    return detail
+      .map((item) => {
+        const field = Array.isArray(item.loc) ? item.loc[item.loc.length - 1] : null;
+        const text = item.msg ?? 'valor no válido';
+        return field && field !== 'body' ? `${field}: ${text}` : text;
+      })
+      .join('; ');
+  }
+  return `Error ${status}`;
+}
 
 // -----------------------------------------------------------------------------
 // request(): hace la petición HTTP real al backend.
@@ -43,17 +70,20 @@ async function request(method, path, body) {
   });
 
   if (!response.ok) {
-    if (response.status === 401) removeToken(); // token caducado o inválido
+    // 401 con sesión abierta = token caducado o inválido -> cerrar sesión.
+    // (El 401 del propio login significa "contraseña incorrecta": no cuenta.)
+    if (response.status === 401 && token && path !== '/api/auth/login') {
+      removeToken();
+      window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+    }
 
-    // FastAPI devuelve los errores como { "detail": "mensaje" }
-    let message = `Error ${response.status}`;
+    let data = null;
     try {
-      const data = await response.json();
-      if (typeof data.detail === 'string') message = data.detail;
+      data = await response.json();
     } catch {
       // la respuesta no era JSON: nos quedamos con el mensaje genérico
     }
-    const error = new Error(message);
+    const error = new Error(extractErrorMessage(data, response.status));
     error.status = response.status;
     throw error;
   }
