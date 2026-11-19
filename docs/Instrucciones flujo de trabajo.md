@@ -85,18 +85,18 @@ Para permitir tanto el desarrollo completo en local como el despliegue distribui
 
 ### Resolución de Rutas Relativas
 * Docker Compose resuelve las rutas relativas en función de la ubicación del propio fichero `docker-compose.yml` (`/infra/`), no del directorio desde donde se lanza la terminal.
-* Por ello, las referencias al backend utilizan `../backend` como contexto de compilación (ej. `context: ../backend`) y `../backend/persistencia/init_auth.sql` para los scripts de inicio SQL.
+* Por ello, las referencias al backend utilizan `../backend` como contexto de compilación (ej. `context: ../backend`) y `../backend/init-scripts/auth_db.sql` para los scripts de inicio SQL.
 
 ### Uso de Perfiles (`profiles`) para Despliegue por Nodos
 El archivo define tres perfiles principales para modularizar la ejecución:
 
-* **Despliegue de la Capa de Persistencia (MV 3 - IP `10.0.0.12`):**
+* **Despliegue de la Capa de Persistencia (MV 3 - IP `192.168.120.62`):**
   ```bash
   docker compose --profile db up -d
   ```
   *(Inicia únicamente los contenedores PostgreSQL: `auth-db`, `academic-db` y `feedback-db`).*
 
-* **Despliegue de la Capa de Backend (MV 2 - IP `10.0.0.11` y MV 4 - IP `10.0.0.13`):**
+* **Despliegue de la Capa de Backend (MV 2 - IP `192.168.120.58` y MV 4 - IP `192.168.120.66`):**
   ```bash
   docker compose --profile backend up -d
   ```
