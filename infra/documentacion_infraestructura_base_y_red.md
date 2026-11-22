@@ -5,7 +5,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Nodo 1** | `nodo1` | `192.168.120.54` | API Gateway (Nginx) + Frontend estático (React) | `22` (SSH), `80` (HTTP), `443` (HTTPS) |
 | **Nodo 2** | `nodo2` | `192.168.120.58` | Backend Principal (Microservicios FastAPI) | `22` (SSH), subred `192.168.120.0/24` |
-| **Nodo 3** | `nodo3` | `192.168.120.62` | Persistencia (Bases de datos MariaDB) | `22` (SSH), `3306-3308` (solo desde `.58` y `.66`), subred |
+| **Nodo 3** | `nodo3` | `192.168.120.62` | Persistencia (Bases de datos PostgreSQL) | `22` (SSH), `5432:5434` (solo desde `.58` y `.66`), subred |
 | **Nodo 4** | `nodo4` | `192.168.120.66` | Nodo Réplica / Alta Disponibilidad (M11) | `22` (SSH), subred `192.168.120.0/24` |
 
 ---
@@ -37,11 +37,11 @@ sudo ufw allow from 192.168.120.0/24
 sudo ufw --force enable
 ```
 
-### Reglas específicas de MariaDB en Nodo 3 (`192.168.120.62`)
-Acceso restringido al rango de puertos `3306:3308` (`auth-db` en `3306`, `academic-db` en `3307` y `feedback-db` en `3308`) únicamente desde los nodos de Backend:
+### Reglas específicas de PostgreSQL en Nodo 3 (`192.168.120.62`)
+Acceso restringido al rango de puertos `5432:5434` (`auth-db` en `5432`, `academic-db` en `5433` y `feedback-db` en `5434`) únicamente desde los nodos de Backend:
 ```bash
-sudo ufw allow from 192.168.120.58 to any port 3306:3308 proto tcp
-sudo ufw allow from 192.168.120.66 to any port 3306:3308 proto tcp
+sudo ufw allow from 192.168.120.58 to any port 5432:5434 proto tcp
+sudo ufw allow from 192.168.120.66 to any port 5432:5434 proto tcp
 ```
 
 ---
