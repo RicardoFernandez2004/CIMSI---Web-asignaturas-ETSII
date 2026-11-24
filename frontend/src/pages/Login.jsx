@@ -67,9 +67,11 @@ export default function Login() {
 
       <p>¿No tienes cuenta? <Link to="/registro">Regístrate</Link></p>
 
-      <p style={{ marginTop: '30px', fontSize: '0.85em', color: '#666' }}>
-        Usuarios de prueba (contraseña 1234): student1@alum.us.es · admin@us.es
-      </p>
+      {import.meta.env.VITE_USE_MOCKS === 'true' && (
+        <p style={{ marginTop: '30px', fontSize: '0.85em', color: '#666' }}>
+          Usuarios de prueba (contraseña 1234): student1@alum.us.es · admin@us.es
+        </p>
+      )}
     </div>
   );
 }

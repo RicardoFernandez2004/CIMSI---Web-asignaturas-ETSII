@@ -136,8 +136,8 @@ export default function Resenas() {
             <input type="number" name="teaching_rating" min="1" max="5" value={formData.teaching_rating} onChange={handleChange} required />
           </div>
           <div>
-            <label>Nota Obtenida (0-10)</label>
-            <input type="number" name="student_grade" min="0" max="10" step="0.1" value={formData.student_grade} onChange={handleChange} required />
+            <label>Nota Obtenida (1-10)</label>
+            <input type="number" name="student_grade" min="1" max="10" step="1" value={formData.student_grade} onChange={handleChange} required />
           </div>
         </div>
 

@@ -70,7 +70,7 @@ export default function Asignaturas() {
         )}
       </div>
 
-      <p style={{ color: '#555' }}>{subjects.length} asignaturas</p>
+      <p style={{ color: '#555' }}>{subjects.length} {subjects.length === 1 ? 'asignatura' : 'asignaturas'}</p>
       {subjects.length === 0 && <p>No hay asignaturas con estos filtros.</p>}
       <div style={{ display: 'grid', gap: '15px' }}>
         {subjects.map((subject) => (
