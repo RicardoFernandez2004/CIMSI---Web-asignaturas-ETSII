@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import * as api from '../services/api';
+import { UNAUTHORIZED_EVENT } from '../services/api';
 
 
 export default function AuthProvider({ children }) {
@@ -13,6 +14,14 @@ export default function AuthProvider({ children }) {
       .then(setUser)                 
       .catch(() => api.logout())    
       .finally(() => setChecking(false));
+  }, []);
+
+  // Si el backend responde 401 (token caducado), cerramos la sesión:
+  // ProtectedRoute redirige solo a /login al quedar user = null.
+  useEffect(() => {
+    const handleUnauthorized = () => setUser(null);
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
   }, []);
 
   async function login(email, password) {

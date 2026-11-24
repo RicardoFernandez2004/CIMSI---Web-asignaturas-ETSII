@@ -84,3 +84,16 @@
     }
     ```
   * `401 Unauthorized`: Si el token proporcionado está ausente, ha expirado o es inválido.
+### 1.4 Registrar un nuevo administrador (Staff)
+
+* **Método y URL:** `POST /staff`
+* **Autenticación:** Requiere un token de tipo Bearer válido perteneciente a un usuario con rol `admin`.
+* **Cuerpo de la solicitud:**
+  ```json
+  {
+    "email": "admin.nuevo@ateneo.it",
+    "password": "PasswordAdmin123!",
+    "name": "Luigi",
+    "surname": "Verdi",
+    "date_of_birth": "1985-08-20"
+  }

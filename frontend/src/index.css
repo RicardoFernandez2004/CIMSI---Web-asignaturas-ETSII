@@ -181,3 +181,12 @@ textarea {
   color: #999;
   text-align: right;
 }
+
+.exito {
+  background: #e6f4ea;
+  border: 1px solid #b7dfc2;
+  color: #1e6b34;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
