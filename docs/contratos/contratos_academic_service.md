@@ -170,3 +170,28 @@
 *   `401 Unauthorized`: El token falta, está mal formado o ha caducado.
 *   `403 Forbidden`: El usuario está autenticado pero no tiene el rol de `admin` (intento de escritura denegado).
 *   `422 Unprocessable Entity`: El JSON enviado no cumple con los tipos requeridos (por ejemplo, una cadena de texto en lugar de un número entero) o faltan campos obligatorios.
+
+### Obtener el detalle de una asignatura (Subject)
+
+* **Método y URL:** `GET /subjects/{subject_id}`
+* **Autenticación:** Requiere un token de tipo Bearer válido.
+* **Parámetros de ruta (Path):**
+  * `subject_id` (UUID, obligatorio): ID de la asignatura a consultar.
+* **Respuestas:**
+  * `200 OK`: Devuelve el objeto con toda la información de la asignatura.
+    ```json
+    {
+      "code": "INF-101",
+      "name": "Programación I",
+      "academic_year": 1,
+      "semester": 1,
+      "ects": 6,
+      "degree_id": "8c6ca32f-698e-4db1-a045-88618291fb7b",
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      "created_at": "2026-11-25T10:00:00Z",
+      "updated_at": "2026-11-25T10:00:00Z"
+    }
+    ```
+  * `401 Unauthorized`: Si el token proporcionado está ausente, ha expirado o es inválido.
+  * `404 Not Found`: Si no existe ninguna asignatura con el `subject_id` proporcionado.
+  * `422 Unprocessable Entity`: Si el `subject_id` no tiene un formato UUID válido.
