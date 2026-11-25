@@ -19,7 +19,7 @@ from app.crud.academic import (
     get_professors, create_professor,
     get_subjects, create_subject, assign_professors_to_subject,
     update_degree, delete_degree, update_professor, delete_professor,
-    update_subject, delete_subject
+    update_subject, delete_subject, get_subject
 )
 from app.core.security import get_current_user, require_admin, TokenData
 
@@ -64,6 +64,21 @@ def read_subjects(
         degree_id=degree_id, 
         academic_year=academic_year
     )
+
+
+@router.get("/subjects/{subject_id}", response_model=SubjectResponse, status_code=status.HTTP_200_OK)
+def read_subject(
+    subject_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: TokenData = Depends(get_current_user)
+):
+    db_subject = get_subject(db, subject_id=subject_id)
+    if not db_subject:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Asignatura no encontrada"
+        )
+    return db_subject
 
 @router.post("/subjects", response_model=SubjectResponse, status_code=status.HTTP_201_CREATED)
 def add_subject(subject: SubjectCreate, db: Session = Depends(get_db), admin_user: TokenData = Depends(require_admin)):
