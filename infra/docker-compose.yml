@@ -1,0 +1,149 @@
+version: '3.8'
+
+# ==============================================================================
+# PROYECTO CIMSI - ORQUESTADOR DOCKER COMPOSE UNIFICADO (v3)
+# Ubicación requerida: /infra/docker-compose.yml
+# Responsable: Persona 5 (Pareja 3 - Automatización y Escalado)
+# ==============================================================================
+# Modos de ejecución mediante perfiles (profiles):
+#   - Desarrollo local completo (1 sola máquina):
+#       docker compose --profile full up -d --build
+#   - Persistencia PostgreSQL (MV 3 - IP 10.0.0.12):
+#       docker compose --profile db up -d --build
+#   - Microservicios FastAPI (MV 2 - IP 10.0.0.11):
+#       docker compose --profile backend up -d --build
+#   - Réplica de Feedback (MV 4 - IP 10.0.0.13):
+#       docker compose up -d --build feedback-service
+# ==============================================================================
+
+services:
+  # ============================================================================
+  # CAPA DE PERSISTENCIA (3 BBDD PostgreSQL - MV 3 / IP: 10.0.0.12)
+  # Perfiles: db, full
+  # ============================================================================
+  auth-db:
+    image: postgres:15-alpine
+    container_name: auth-db
+    restart: always
+    profiles: ["db", "full"]
+    environment:
+      POSTGRES_DB: ${AUTH_DB_NAME:-auth_db}
+      POSTGRES_USER: ${POSTGRES_USER:-cimsi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_cimsi_2026}
+    ports:
+      - "${AUTH_DB_PORT:-5432}:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+      - ../backend/persistencia/init_auth.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cimsi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cimsi_user} -d ${AUTH_DB_NAME:-auth_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  academic-db:
+    image: postgres:15-alpine
+    container_name: academic-db
+    restart: always
+    profiles: ["db", "full"]
+    environment:
+      POSTGRES_DB: ${ACADEMIC_DB_NAME:-academic_db}
+      POSTGRES_USER: ${POSTGRES_USER:-cimsi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_cimsi_2026}
+    ports:
+      - "${ACADEMIC_DB_PORT:-5433}:5432"
+    volumes:
+      - academic_db_data:/var/lib/postgresql/data
+      - ../backend/persistencia/init_academic.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cimsi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cimsi_user} -d ${ACADEMIC_DB_NAME:-academic_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  feedback-db:
+    image: postgres:15-alpine
+    container_name: feedback-db
+    restart: always
+    profiles: ["db", "full"]
+    environment:
+      POSTGRES_DB: ${FEEDBACK_DB_NAME:-feedback_db}
+      POSTGRES_USER: ${POSTGRES_USER:-cimsi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_cimsi_2026}
+    ports:
+      - "${FEEDBACK_DB_PORT:-5434}:5432"
+    volumes:
+      - feedback_db_data:/var/lib/postgresql/data
+      - ../backend/persistencia/init_feedback.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cimsi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cimsi_user} -d ${FEEDBACK_DB_NAME:-feedback_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # CAPA DE BACKEND (Microservicios FastAPI - MV 2 / IP: 10.0.0.11 & MV 4)
+  # Perfiles: backend, full
+  # ============================================================================
+  auth-service:
+    build:
+      context: ../backend
+      dockerfile: Auth/Dockerfile
+    container_name: auth-service
+    restart: always
+    profiles: ["backend", "full"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cimsi_user}:${POSTGRES_PASSWORD:-secure_password_cimsi_2026}@${AUTH_DB_HOST:-auth-db}:${AUTH_DB_PORT:-5432}/${AUTH_DB_NAME:-auth_db}
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_cimsi_2026}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+    ports:
+      - "8001:8000"
+    networks:
+      - cimsi-net
+
+  academic-service:
+    build:
+      context: ../backend
+      dockerfile: Academic/Dockerfile
+    container_name: academic-service
+    restart: always
+    profiles: ["backend", "full"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cimsi_user}:${POSTGRES_PASSWORD:-secure_password_cimsi_2026}@${ACADEMIC_DB_HOST:-academic-db}:${ACADEMIC_DB_PORT:-5433}/${ACADEMIC_DB_NAME:-academic_db}
+    ports:
+      - "8002:8000"
+    networks:
+      - cimsi-net
+
+  feedback-service:
+    build:
+      context: ../backend
+      dockerfile: Feedback/Dockerfile
+    container_name: feedback-service
+    restart: always
+    profiles: ["backend", "full"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cimsi_user}:${POSTGRES_PASSWORD:-secure_password_cimsi_2026}@${FEEDBACK_DB_HOST:-feedback-db}:${FEEDBACK_DB_PORT:-5434}/${FEEDBACK_DB_NAME:-feedback_db}
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_cimsi_2026}
+    ports:
+      - "8003:8000"
+    networks:
+      - cimsi-net
+
+# ==============================================================================
+# REDES Y VOLÚMENES PERSISTENTES
+# ==============================================================================
+networks:
+  cimsi-net:
+    driver: bridge
+
+volumes:
+  auth_db_data:
+  academic_db_data:
+  feedback_db_data:
