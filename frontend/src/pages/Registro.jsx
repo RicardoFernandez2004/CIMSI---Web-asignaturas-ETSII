@@ -48,38 +48,50 @@ export default function Registro() {
     }
   }
 
-  const inputStyle = { marginBottom: '15px', padding: '8px' };
+    return (
+    <div className="container container-estrecho">
+      <h2 className="titulo-centrado">Crear cuenta</h2>
+      <p className="subtitulo">Regístrate para valorar asignaturas</p>
 
-  return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif' }}>
-      <h2>Crear cuenta</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
-        <label htmlFor="name">Nombre</label>
-        <input id="name" name="name" value={form.name} onChange={handleChange} required style={inputStyle} />
+      <form onSubmit={handleSubmit}>
+        <label className="campo">
+          Nombre
+          <input id="name" name="name" value={form.name} onChange={handleChange} required />
+        </label>
 
-        <label htmlFor="surname">Apellidos</label>
-        <input id="surname" name="surname" value={form.surname} onChange={handleChange} required style={inputStyle} />
+        <label className="campo">
+          Apellidos
+          <input id="surname" name="surname" value={form.surname} onChange={handleChange} required />
+        </label>
 
-        <label htmlFor="email">Correo Universitario</label>
-        <input id="email" name="email" type="email" placeholder="ejemplo@alum.us.es" value={form.email} onChange={handleChange} required style={inputStyle} />
+        <label className="campo">
+          Correo Universitario
+          <input id="email" name="email" type="email" placeholder="ejemplo@alum.us.es" value={form.email} onChange={handleChange} required />
+        </label>
 
-        <label htmlFor="date_of_birth">Fecha de nacimiento</label>
-        <input id="date_of_birth" name="date_of_birth" type="date" value={form.date_of_birth} onChange={handleChange} required style={inputStyle} />
+        <label className="campo">
+          Fecha de nacimiento
+          <input id="date_of_birth" name="date_of_birth" type="date" value={form.date_of_birth} onChange={handleChange} required />
+        </label>
 
-        <label htmlFor="password">Contraseña (mínimo 8 caracteres)</label>
-        <input id="password" name="password" type="password" value={form.password} onChange={handleChange} required style={inputStyle} />
+        <label className="campo">
+          Contraseña (mínimo 8 caracteres)
+          <input id="password" name="password" type="password" value={form.password} onChange={handleChange} required />
+        </label>
 
-        <label htmlFor="confirmPassword">Repite la contraseña</label>
-        <input id="confirmPassword" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange} required style={{ ...inputStyle, marginBottom: '20px' }} />
+        <label className="campo">
+          Repite la contraseña
+          <input id="confirmPassword" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange} required />
+        </label>
 
-        {error && <p style={{ color: 'crimson', marginTop: 0 }}>{error}</p>}
+        {error && <p className="error">{error}</p>}
 
-        <button type="submit" disabled={sending} style={{ padding: '10px', background: '#0056b3', color: 'white', border: 'none', cursor: 'pointer' }}>
+        <button type="submit" className="btn-enviar" disabled={sending}>
           {sending ? 'Creando cuenta…' : 'Registrarse'}
         </button>
       </form>
 
-      <p>¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+      <p className="enlace-pie">¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
     </div>
   );
 }

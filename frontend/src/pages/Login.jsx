@@ -33,42 +33,46 @@ export default function Login() {
     }
   }
 
-  return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif' }}>
-      <h2>Acceso a la Plataforma CIMSI</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
-        <label htmlFor="email">Correo Universitario</label>
-        <input
-          id="email"
-          type="email"
-          placeholder="ejemplo@alum.us.es"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ marginBottom: '15px', padding: '8px' }}
-        />
+    return (
+    <div className="container container-estrecho">
+      <h2 className="titulo-centrado">CIMSI</h2>
+      <p className="subtitulo">Valoración de asignaturas de la ETSII</p>
 
-        <label htmlFor="password">Contraseña</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ marginBottom: '20px', padding: '8px' }}
-        />
+      <form onSubmit={handleSubmit}>
+        <label className="campo">
+          Correo Universitario
+          <input
+            type="email"
+            id="email"
+            placeholder="ejemplo@alum.us.es"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </label>
 
-        {error && <p style={{ color: 'crimson', marginTop: 0 }}>{error}</p>}
+        <label className="campo">
+          Contraseña
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </label>
 
-        <button type="submit" disabled={sending} style={{ padding: '10px', background: '#0056b3', color: 'white', border: 'none', cursor: 'pointer' }}>
+        {error && <p className="error">{error}</p>}
+
+        <button type="submit" className="btn-enviar" disabled={sending}>
           {sending ? 'Entrando…' : 'Iniciar Sesión'}
         </button>
       </form>
 
-      <p>¿No tienes cuenta? <Link to="/registro">Regístrate</Link></p>
+      <p className="enlace-pie">¿No tienes cuenta? <Link to="/registro">Regístrate</Link></p>
 
       {import.meta.env.VITE_USE_MOCKS === 'true' && (
-        <p style={{ marginTop: '30px', fontSize: '0.85em', color: '#666' }}>
+        <p className="nota-pruebas">
           Usuarios de prueba (contraseña 1234): student1@alum.us.es · admin@us.es
         </p>
       )}

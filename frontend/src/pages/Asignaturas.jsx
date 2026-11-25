@@ -36,16 +36,17 @@ export default function Asignaturas() {
     setYear('');
   }
 
-  if (loading) return <p style={{ padding: '40px' }}>Cargando asignaturas…</p>;
-  if (error) return <p style={{ padding: '40px', color: 'crimson' }}>No se pudieron cargar las asignaturas: {error}</p>;
+    if (loading) return <div className="container"><p>Cargando asignaturas…</p></div>;
+  if (error) return <div className="container"><p className="error">No se pudieron cargar las asignaturas: {error}</p></div>;
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif' }}>
+    <div className="container container-ancho">
       <h2>Catálogo de Asignaturas</h2>
-            <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-end', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <label style={{ display: 'flex', flexDirection: 'column' }}>
+
+      <div className="filtros">
+        <label className="campo">
           Grado
-          <select value={degreeId} onChange={(e) => setDegreeId(e.target.value)} style={{ padding: '8px' }}>
+          <select value={degreeId} onChange={(e) => setDegreeId(e.target.value)}>
             <option value="">Todos los grados</option>
             {degrees.map((degree) => (
               <option key={degree.id} value={degree.id}>{degree.name}</option>
@@ -53,9 +54,9 @@ export default function Asignaturas() {
           </select>
         </label>
 
-        <label style={{ display: 'flex', flexDirection: 'column' }}>
+        <label className="campo">
           Curso
-          <select value={year} onChange={(e) => setYear(e.target.value)} style={{ padding: '8px' }}>
+          <select value={year} onChange={(e) => setYear(e.target.value)}>
             <option value="">Todos los cursos</option>
             {[1, 2, 3, 4].map((n) => (
               <option key={n} value={n}>{n}º</option>
@@ -64,24 +65,27 @@ export default function Asignaturas() {
         </label>
 
         {(degreeId || year) && (
-          <button onClick={clearFilters} style={{ padding: '8px 12px', cursor: 'pointer' }}>
+          <button onClick={clearFilters} className="btn-secundario">
             Quitar filtros
           </button>
         )}
       </div>
 
-      <p style={{ color: '#555' }}>{subjects.length} {subjects.length === 1 ? 'asignatura' : 'asignaturas'}</p>
+      <p className="contador">{subjects.length} {subjects.length === 1 ? 'asignatura' : 'asignaturas'}</p>
       {subjects.length === 0 && <p>No hay asignaturas con estos filtros.</p>}
-      <div style={{ display: 'grid', gap: '15px' }}>
+
+      <div className="lista-asignaturas">
         {subjects.map((subject) => (
-          <div key={subject.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '5px' }}>
-            <h3 style={{ margin: '0 0 10px 0' }}>{subject.name}</h3>
-            <p style={{ margin: '0 0 5px 0' }}><strong>Grado:</strong> {degreeName(subject.degree_id)}</p>
-            <p style={{ margin: '0 0 15px 0' }}>
-              <strong>Curso:</strong> {subject.academic_year}º · <strong>Cuatrimestre:</strong> {subject.semester}º · <strong>ECTS:</strong> {subject.ects}
-            </p>
-            <Link to={`/resenas/${subject.id}`} style={{ color: '#0056b3', textDecoration: 'none', fontWeight: 'bold' }}>
-              Ver Reseñas
+          <div key={subject.id} className="tarjeta-asignatura">
+            <h3>{subject.name}</h3>
+            <p>{degreeName(subject.degree_id)}</p>
+            <div className="etiquetas">
+              <span className="etiqueta">{subject.academic_year}º curso</span>
+              <span className="etiqueta">{subject.semester}º cuatrimestre</span>
+              <span className="etiqueta">{subject.ects} ECTS</span>
+            </div>
+            <Link to={`/resenas/${subject.id}`} className="btn-ver">
+              Ver reseñas →
             </Link>
           </div>
         ))}

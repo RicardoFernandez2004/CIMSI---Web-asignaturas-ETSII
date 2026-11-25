@@ -1,0 +1,261 @@
+/* src/estilos.css — estilos comunes de toda la web */
+
+:root {
+  --rojo: #9c0000;
+  --rojo-oscuro: #7a0000;
+  --gris-texto: #555;
+  --gris-borde: #e2e2e2;
+}
+
+/* ---------- Barra superior ---------- */
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 40px;
+  background: var(--rojo);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-logo {
+  font-size: 1.2em;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.navbar a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.navbar-usuario {
+  margin-left: auto;
+  font-size: 0.95em;
+}
+
+.navbar-rol {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  margin-left: 6px;
+}
+
+.btn-salir {
+  background: white;
+  color: var(--rojo);
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-salir:hover {
+  background: #f1f1f1;
+}
+
+/* ---------- Login y registro ---------- */
+.container-estrecho {
+  max-width: 420px;
+}
+
+.titulo-centrado {
+  text-align: center;
+  color: var(--rojo);
+  margin-top: 0;
+}
+
+.subtitulo {
+  text-align: center;
+  color: var(--gris-texto);
+  margin-top: -5px;
+  margin-bottom: 25px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+  color: #444;
+  font-weight: 600;
+}
+
+.campo input,
+.campo select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: normal;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--rojo);
+  box-shadow: 0 0 0 3px rgba(156, 0, 0, 0.1);
+}
+
+.enlace-pie {
+  text-align: center;
+  margin-top: 20px;
+  color: var(--gris-texto);
+}
+
+.enlace-pie a {
+  color: var(--rojo);
+  font-weight: bold;
+}
+
+.nota-pruebas {
+  margin-top: 25px;
+  font-size: 0.8em;
+  color: #888;
+  text-align: center;
+}
+
+/* ---------- Catálogo de asignaturas ---------- */
+.filtros {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.filtros .campo {
+  margin-bottom: 0;
+}
+
+.btn-secundario {
+  background: white;
+  color: var(--rojo);
+  border: 1px solid var(--rojo);
+  padding: 9px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-secundario:hover {
+  background: #fff5f5;
+}
+
+.contador {
+  color: var(--gris-texto);
+  font-size: 0.9em;
+}
+
+.lista-asignaturas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.tarjeta-asignatura {
+  border: 1px solid var(--gris-borde);
+  border-top: 4px solid var(--rojo);
+  border-radius: 8px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.tarjeta-asignatura:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.tarjeta-asignatura h3 {
+  margin: 0 0 10px 0;
+  color: #1a1a1a;
+}
+
+.tarjeta-asignatura p {
+  margin: 0 0 6px 0;
+  color: var(--gris-texto);
+  font-size: 0.9em;
+}
+
+.etiquetas {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 15px 0;
+}
+
+.etiqueta {
+  background: #f3f3f3;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 0.8em;
+  color: #444;
+}
+
+.btn-ver {
+  margin-top: auto;
+  align-self: flex-start;
+  color: var(--rojo);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.btn-ver:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Panel de administración ---------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 15px;
+}
+
+.stat-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  color: var(--gris-texto);
+}
+
+.stat-numero {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--rojo);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 2px solid #ddd;
+}
+
+.tabla td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.tabla a {
+  color: var(--rojo);
+}
+
+/* La tarjeta blanca (.container) es más ancha en el catálogo */
+.container-ancho {
+  max-width: 1100px;
+}
