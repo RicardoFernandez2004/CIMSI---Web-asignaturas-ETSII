@@ -72,6 +72,17 @@ export async function getMe(token) {
   return publicUser(userFromToken(token));
 }
 
+// POST /api/auth/staff
+export async function createStaff(token, data){
+  await wait();
+  const admin = userFromToken(token);
+  if (admin.role !== 'admin') throw httpError(403, 'Solo un administrador puede crear otros administradores');
+  if (users.some((u) => u.email === data.email)) throw httpError(400, 'Ese correo ya está registrado');
+  const user = { ...data, id: crypto.randomUUID(), role: 'admin', created_at: new Date().toISOString() };
+  users.push(user);
+  return publicUser(user);
+}
+
 // POST /api/auth/users/bulk
 export async function getUsersBulk(ids) {
   await wait(100);

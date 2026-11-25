@@ -130,6 +130,12 @@ export function getMe() {
   return USE_MOCKS ? mock.getMe(getToken()) : request('GET', '/api/auth/me');
 }
 
+export function createStaff(adminData) {
+  return USE_MOCKS
+    ? mock.createStaff(getToken(), adminData)
+    : request('POST', '/api/auth/staff', adminData);
+}
+
 export function getUsersBulk(userIds) {
   return USE_MOCKS
     ? mock.getUsersBulk(userIds)
