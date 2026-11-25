@@ -16,6 +16,7 @@ export default function Navbar() {
     <nav style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '12px 40px', background: '#0056b3', color: 'white', fontFamily: 'sans-serif' }}>
       <strong>CIMSI</strong>
       <Link to="/asignaturas" style={{ color: 'white' }}>Asignaturas</Link>
+      {user.role === 'admin' && <Link to="/admin" style={{color: 'white'}}>Admin</Link>}
       <span style={{ marginLeft: 'auto' }}>
         {user.name} {user.surname} ({user.role})
       </span>

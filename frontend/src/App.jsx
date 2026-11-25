@@ -6,6 +6,7 @@ import Resenas from './pages/Resenas';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Registro from './pages/Registro';
+import Admin from './pages/Admin';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/registro" element={<Registro />} />
           <Route path="/asignaturas" element={<ProtectedRoute><Asignaturas /></ProtectedRoute>} />
           <Route path="/resenas/:id" element={<ProtectedRoute><Resenas /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
