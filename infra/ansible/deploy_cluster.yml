@@ -1,0 +1,105 @@
+---
+# ==============================================================================
+# Playbook de Ansible - Proyecto CIMSI (infra/ansible/deploy_cluster.yml)
+# Despliegue Remoto Automatizado Multi-Nodo en Proxmox (Criterio M8)
+# ==============================================================================
+
+- name: 1. Comprobación y preparación de Docker en todas las MVs
+  hosts: cluster_nodes
+  become: true
+  tasks:
+    - name: Actualizar caché de repositorios apt
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Instalar paquetes base (Docker y Git)
+      apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+          - git
+          - rsync
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Asegurar que el servicio Docker está activo y habilitado
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Añadir usuario del sistema al grupo docker
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+- name: 2. Desplegar Capa de Persistencia (PostgreSQL) en MV 3 (10.0.0.12)
+  hosts: persistencia
+  become: false
+  tasks:
+    - name: Sincronizar código del repositorio en MV 3
+      synchronize:
+        src: "{{ playbook_dir }}/../../"
+        dest: "~/cimsi-app/"
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.venv"
+          - "--exclude=node_modules"
+
+    - name: Asignar permisos de ejecución a deploy.sh
+      file:
+        path: "~/cimsi-app/infra/deploy.sh"
+        mode: '0755'
+
+    - name: Ejecutar despliegue de las 3 Bases de Datos
+      command: ./infra/deploy.sh db
+      args:
+        chdir: "~/cimsi-app"
+
+- name: 3. Desplegar Capa de Backend (FastAPI Microservices) en MV 2 (10.0.0.11)
+  hosts: backend
+  become: false
+  tasks:
+    - name: Sincronizar código del repositorio en MV 2
+      synchronize:
+        src: "{{ playbook_dir }}/../../"
+        dest: "~/cimsi-app/"
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.venv"
+          - "--exclude=node_modules"
+
+    - name: Asignar permisos de ejecución a deploy.sh
+      file:
+        path: "~/cimsi-app/infra/deploy.sh"
+        mode: '0755'
+
+    - name: Ejecutar despliegue de los Microservicios
+      command: ./infra/deploy.sh backend
+      args:
+        chdir: "~/cimsi-app"
+
+- name: 4. Desplegar Nodo Réplica (Feedback HA) en MV 4 (10.0.0.13)
+  hosts: replica
+  become: false
+  tasks:
+    - name: Sincronizar código del repositorio en MV 4
+      synchronize:
+        src: "{{ playbook_dir }}/../../"
+        dest: "~/cimsi-app/"
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.venv"
+          - "--exclude=node_modules"
+
+    - name: Asignar permisos de ejecución a deploy.sh
+      file:
+        path: "~/cimsi-app/infra/deploy.sh"
+        mode: '0755'
+
+    - name: Ejecutar despliegue del Nodo Réplica
+      command: ./infra/deploy.sh replica
+      args:
+        chdir: "~/cimsi-app"
