@@ -8,17 +8,17 @@ version: '3.8'
 # Modos de ejecución mediante perfiles (profiles):
 #   - Desarrollo local completo (1 sola máquina):
 #       docker compose --profile full up -d --build
-#   - Persistencia PostgreSQL (MV 3 - IP 10.0.0.12):
+#   - Persistencia PostgreSQL (MV 3 - IP 192.168.120.62):
 #       docker compose --profile db up -d --build
-#   - Microservicios FastAPI (MV 2 - IP 10.0.0.11):
+#   - Microservicios FastAPI (MV 2 - IP 192.168.120.58):
 #       docker compose --profile backend up -d --build
-#   - Réplica de Feedback (MV 4 - IP 10.0.0.13):
+#   - Réplica de Feedback (MV 4 - IP 192.168.120.66):
 #       docker compose up -d --build feedback-service
 # ==============================================================================
 
 services:
   # ============================================================================
-  # CAPA DE PERSISTENCIA (3 BBDD PostgreSQL - MV 3 / IP: 10.0.0.12)
+  # CAPA DE PERSISTENCIA (3 BBDD PostgreSQL - MV 3 / IP: 192.168.120.62)
   # Perfiles: db, full
   # ============================================================================
   auth-db:
@@ -88,7 +88,7 @@ services:
       retries: 5
 
   # ============================================================================
-  # CAPA DE BACKEND (Microservicios FastAPI - MV 2 / IP: 10.0.0.11 & MV 4)
+  # CAPA DE BACKEND (Microservicios FastAPI - MV 2 / IP: 192.168.120.58 & MV 4)
   # Perfiles: backend, full
   # ============================================================================
   auth-service:

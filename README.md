@@ -51,40 +51,40 @@ A continuación se detallan las normas oficiales del trabajo y la lista de hitos
 ### 📅 Control Semanal de Hitos (Roadmap)
 
 #### 🔹 Semana 1: Cimientos y Entorno Base
-- [x] **Git & Estructura:** Crear repositorio único con carpetas `/infra`, `/backend`, `/frontend`, `/docs` y ramas de trabajo (`infra`, `backend`, `frontend`, `docs`) [2, 26].
+- [x] **Git & Estructura:** Repositorio único con carpetas `/infra`, `/backend`, `/frontend`, `/docs` y ramas de trabajo (`infra`, `backend`, `frontend`, `docs`) [2, 26].
 - [x] **Infraestructura Base:** Borrador inicial del `docker-compose.yml` unificado y la Guía de Git [26].
-- [ ] **MVs & Red (Proxmox):** Desplegar las 4 MVs (MV1 Gateway, MV2 Backend, MV3 BBDD, MV4 Réplica) con IPs fijas (`10.0.0.10` a `10.0.0.13`), claves SSH y cortafuegos `ufw` [2, 15].
-- [ ] **BBDD & API Contracts:** Diseñar esquemas relacionales independientes en PostgreSQL y contratos JSON de los microservicios FastAPI (Auth, Academic, Feedback) [2, 20, 23].
-- [ ] **Frontend SPA Base:** Crear proyecto React inicial con vistas simples (Login, Asignaturas, Reseñas) y datos simulados [2, 31].
-- [ ] **Documentación:** Crear plantilla oficial de la Memoria en PDF/LaTeX con el índice de la rúbrica y redactar la Introducción [2, 33].
+- [ ] **MVs & Red (Proxmox):** Desplegar las 4 MVs (MV1 Gateway, MV2 Backend, MV3 BBDD, MV4 Réplica) con IPs fijas (`192.168.120.54` a `192.168.120.66`), claves SSH y cortafuegos `ufw` [2, 15].
+- [x] **BBDD & API Contracts:** Esquemas relacionales independientes en PostgreSQL (`backend/init-scripts/`) y contratos de API (`docs/contratos/`) definidos [2, 20, 23].
+- [x] **Frontend SPA Base:** Proyecto React con vistas Login, Asignaturas y Reseñas (`frontend/src/pages/`) [2, 31].
+- [ ] **Documentación:** Plantilla oficial de la Memoria en PDF/LaTeX con el índice de la rúbrica y redacción de la Introducción [2, 33].
 
 #### 🔹 Semana 2: Despliegue e Integración
-- [ ] **Persistencia (MV3):** Levantar los 3 contenedores PostgreSQL aislados con volúmenes persistentes y cargar datos iniciales de prueba [2, 24].
-- [ ] **Backend (MV2):** Desplegar los 3 microservicios FastAPI en contenedores Docker y validar tokens JWT [2, 21].
-- [ ] **API Gateway (MV1):** Configurar Nginx como proxy inverso (`/api/auth/`, `/api/academic/`, `/api/feedback/`) y servir la SPA compilada en React [2, 18].
-- [ ] **Frontend Conectado:** Conectar React con las APIs reales a través de Nginx y gestionar el token JWT en el cliente [2, 31].
-- [ ] **Automatización (M8):** Iniciar empaquetado de scripts Bash (`deploy.sh`) / playbooks de Ansible para automatizar el despliegue sin pasos manuales [2, 26].
-- [ ] **Memoria PDF:** Documentar inventario de MVs, tabla de IPs, reglas de cortafuegos y capítulo de Arquitectura [2, 16, 33].
+- [x] **Persistencia (MV3):** `docker-compose.yml` y scripts SQL de inicialización con datos de prueba listos (despliegue en MV3 pendiente) [2, 24].
+- [x] **Backend (MV2):** 3 microservicios FastAPI (`auth`, `academic`, `feedback`) con `Dockerfile`, modelos, esquemas y CRUD listos para contenedorizar [2, 21].
+- [x] **API Gateway (MV1):** `nginx.conf` con proxy inverso (`/api/auth/`, `/api/academic/`, `/api/feedback/`) y balanceo `upstream` HA para Feedback [2, 18].
+- [x] **Frontend Conectado:** `services/api.js` con integración real a las APIs (alternable a datos simulados) y gestión de token JWT [2, 31].
+- [x] **Automatización (M8):** Script `deploy.sh` y playbooks de Ansible para despliegue distribuido [2, 26].
+- [ ] **Memoria PDF:** Inventario de MVs, tabla de IPs, reglas de cortafuegos y capítulo de Arquitectura [2, 16, 33].
 
 #### 🔹 Semana 3: Requisitos Avanzados (M8–M11)
-- [ ] **Nodo Réplica & HA (M11):** Desplegar réplica de Feedback Service en MV4 y configurar balanceo `upstream` en Nginx desde MV1 [2, 19, 27].
-- [ ] **Escalabilidad (M10):** Probar y redactar el procedimiento técnico reproducible para añadir nuevos nodos al clúster [2, 27].
-- [ ] **Monitorización (M9):** Desplegar agentes y paneles (Prometheus/Grafana) para medir consumo de CPU, RAM, tráfico HTTP y estado de contenedores [2, 29].
-- [ ] **Frontend Compilado:** Generar `npm run build` y publicar estáticos finales en Nginx [2, 32].
-- [ ] **Memoria PDF:** Integrar capturas de Swagger, esquemas de BBDD y apartados de Automatización, Monitorización y Escalado [2, 34].
+- [x] **Nodo Réplica & HA (M11):** Balanceo `upstream` en Nginx entre MV2 y MV4 y playbook de despliegue del nodo réplica (sin validar en MVs reales) [2, 19, 27].
+- [ ] **Escalabilidad (M10):** Procedimiento técnico reproducible para añadir nuevos nodos al clúster [2, 27].
+- [x] **Monitorización (M9):** Stack Prometheus + Grafana + blackbox-exporter + node-exporter + cadvisor con reglas de alerta [2, 29].
+- [ ] **Frontend Compilado:** `npm run build` y estáticos publicados en Nginx [2, 32].
+- [ ] **Memoria PDF:** Capturas de Swagger, esquemas de BBDD y apartados de Automatización, Monitorización y Escalado [2, 34].
 
 #### 🔹 Semana 4: Estabilización, Pruebas de Carga y Vídeo Demo
-- [ ] **Congelación de Código:** Congelar cambios en infraestructura, red y backend para garantizar la estabilidad [2, 17, 22].
-- [ ] **Pruebas de Estrés & Resiliencia (M11):** Simular caída de nodo en vivo (apagar MV2) y verificar que la MV4 mantiene el servicio activo [2, 19, 27].
+- [ ] **Congelación de Código:** Congelar cambios en infraestructura, red y backend [2, 17, 22].
+- [ ] **Pruebas de Estrés & Resiliencia (M11):** Simular caída de nodo en vivo y verificar conmutación al nodo réplica [2, 19, 27].
 - [ ] **Precarga de Datos:** Cargar conjunto completo de datos realistas (grados, asignaturas US y reseñas) para la demo [2, 25].
-- [ ] **Vídeo de Demostración (Máx. 10 min):** Grabar y editar la demo funcional de la web y la prueba de caída de nodo [2, 32, 34].
-- [ ] **Borrador de Memoria:** Completar la redacción íntegra de la Memoria en PDF [2, 34].
+- [ ] **Vídeo de Demostración (Máx. 10 min):** Demo funcional y prueba de caída de nodo [2, 32, 34].
+- [ ] **Borrador de Memoria:** Redacción íntegra de la Memoria en PDF [2, 34].
 
 #### 🔹 Semana 5: Cierre, Vídeo Teórico, Entrega y Defensa
-- [ ] **Vídeo de Presentación (Máx. 20 min):** Grabar las intervenciones de 2-3 min por miembro y montar el vídeo de presentación teórica [2, 34].
-- [ ] **Control de Plagio & PDF:** Verificar que el texto sea seleccionable y que el índice de plagio sea `< 30%` [11, 34].
-- [ ] **Entrega Final (13 de Diciembre - 23:59):** Subir a Enseñanza Virtual la Memoria PDF, PDF de Diapositivas, los 2 Vídeos y los Scripts/Código limpios [1, 11, 34].
-- [ ] **Defensa Presencial (17 de Diciembre):** Presentación y turno de preguntas del tribunal (10 min) [1, 11].
+- [ ] **Vídeo de Presentación (Máx. 20 min):** Intervenciones de los 8 miembros y montaje del vídeo teórico [2, 34].
+- [ ] **Control de Plagio & PDF:** Texto seleccionable e índice de plagio `< 30%` [11, 34].
+- [ ] **Entrega Final (13 de Diciembre - 23:59):** Memoria PDF, diapositivas, 2 vídeos y scripts/código en Enseñanza Virtual [1, 11, 34].
+- [ ] **Defensa Presencial (17 de Diciembre):** Exposición de 10 minutos y preguntas del tribunal [1, 11].
 
 ---
 
