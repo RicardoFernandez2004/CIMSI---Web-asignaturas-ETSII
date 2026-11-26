@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getSubjects, getReviews, getUsersBulk, createReview } from '../services/api';
+import { getSubjects, getDegrees, getReviews, getUsersBulk, createReview } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function Resenas() {
@@ -9,6 +9,7 @@ export default function Resenas() {
   const isStudent = user?.role === 'student';
 
   const [subject, setSubject] = useState(null);
+  const [degreeName, setDegreeName] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [authors, setAuthors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -33,8 +34,10 @@ export default function Resenas() {
       setSubmitted(false);
       setSuccessMessage(null);
       try {
-        const [subjectsData, reviewsData] = await Promise.all([getSubjects(), getReviews({ subject_id: id })]);
-        setSubject(subjectsData.find((s) => s.id === id) ?? null);
+        const [subjectsData, reviewsData, degreesData] = await Promise.all([getSubjects(), getReviews({ subject_id: id }), getDegrees()]);
+        const found = subjectsData.find((s) => s.id === id) ?? null;
+        setSubject(found);
+        setDegreeName(degreesData.find((d) => d.id === found?.degree_id)?.name ?? null);
         setReviews(reviewsData);
 
         // Los nombres de los autores son un extra: si esta consulta falla,
@@ -113,6 +116,13 @@ export default function Resenas() {
         <h2>Valoraciones: {subject?.name ?? 'Asignatura desconocida'}</h2>
         {average && <div className="nota-media">★ {average}/5 <span>({reviews.length} reseñas)</span></div>}
       </div>
+
+      {subject && (
+        <p style={{ color: '#555' }}>
+          <strong>Código:</strong> {subject.code} · {degreeName && <><strong>Grado:</strong> {degreeName} · </>}
+          <strong>Curso:</strong> {subject.academic_year}º · <strong>Cuatrimestre:</strong> {subject.semester}º · <strong>ECTS:</strong> {subject.ects}
+        </p>
+      )}
 
       {/* AVISO tras publicar */}
       {successMessage && <p className="exito">{successMessage}</p>}

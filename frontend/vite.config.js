@@ -8,9 +8,9 @@ export default defineConfig({
     // En desarrollo (npm run dev) reenviamos /api/* a los microservicios locales,
     // igual que hace Nginx en producción. Así el frontend usa siempre rutas relativas.
     proxy: {
-      '/api/auth': 'http://localhost:8000',
-      '/api/academic': 'http://localhost:8001',
-      '/api/feedback': 'http://localhost:8002',
+      '/api/auth': 'http://localhost:8001',
+      '/api/academic': 'http://localhost:8002',
+      '/api/feedback': 'http://localhost:8003',
     },
   },
 })
