@@ -1,33 +1,43 @@
 global:
   scrape_interval: 15s
-<<<<<<< HEAD
 
 rule_files:
   - /etc/prometheus/alerts.yml
 
-=======
->>>>>>> origin/main
 scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets: ['localhost:9090']
+
   - job_name: nodes
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: ['192.168.120.54:9100']
+        labels: {mv: MV1}
+      - targets: ['192.168.120.58:9100']
+        labels: {mv: MV2}
+      - targets: ['192.168.120.62:9100']
+        labels: {mv: MV3}
+      - targets: ['192.168.120.66:9100']
+        labels: {mv: MV4}
+
   - job_name: docker
     static_configs:
-<<<<<<< HEAD
-      - targets: ['cadvisor:8080']
+      - targets: ['192.168.120.54:8080']
+        labels: {mv: MV1}
+      - targets: ['192.168.120.58:8080']
+        labels: {mv: MV2}
+      - targets: ['192.168.120.62:8080']
+        labels: {mv: MV3}
+      - targets: ['192.168.120.66:8080']
+        labels: {mv: MV4}
+
   - job_name: health
     metrics_path: /probe
-    params: {module: [http_2xx]}
+    params:
+      module: [http_2xx]
     static_configs:
-      - targets:
-          - http://grafana:3000/api/health
-          # En las MVs (puertos provisionales, confirmar con el equipo):
-          # - http://10.0.0.10/
-          # - http://10.0.0.11:8000/health
-          # - http://10.0.0.13:8000/health
+      - targets: ['http://192.168.120.54/']
+        labels: {mv: MV1, servicio: nginx}
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -35,6 +45,3 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox:9115
-=======
-      - targets: ['cadvisor:8080']
->>>>>>> origin/main
