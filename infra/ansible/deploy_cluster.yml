@@ -35,7 +35,7 @@
         groups: docker
         append: yes
 
-- name: 2. Desplegar Capa de Persistencia (PostgreSQL) en MV 3 (10.0.0.12)
+- name: 2. Desplegar Capa de Persistencia (PostgreSQL) en MV 3 (192.168.120.62)
   hosts: persistencia
   become: false
   tasks:
@@ -58,7 +58,7 @@
       args:
         chdir: "~/cimsi-app"
 
-- name: 3. Desplegar Capa de Backend (FastAPI Microservices) en MV 2 (10.0.0.11)
+- name: 3. Desplegar Capa de Backend (FastAPI Microservices) en MV 2 (192.168.120.58)
   hosts: backend
   become: false
   tasks:
@@ -81,7 +81,7 @@
       args:
         chdir: "~/cimsi-app"
 
-- name: 4. Desplegar Nodo Réplica (Feedback HA) en MV 4 (10.0.0.13)
+- name: 4. Desplegar Nodo Réplica (Feedback HA) en MV 4 (192.168.120.66)
   hosts: replica
   become: false
   tasks:
