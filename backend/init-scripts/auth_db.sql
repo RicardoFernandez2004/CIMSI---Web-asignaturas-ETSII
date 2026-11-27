@@ -49,7 +49,7 @@ INSERT INTO users (id, email, hashed_password, name, surname, date_of_birth, rol
 -- Student 2
 ('11111111-0000-0000-0000-000000000002', 'student2@alum.us.es', '$2b$12$eImiTXuWVxfM37uY4JANjOL.81F8RzW67.Z6j5j6J6J6J6J6J6J6J', 'Ana', 'Martínez Silva', '2002-11-20', 'student', TRUE),
 -- Professor
-('11111111-0000-0000-0000-000000000003', 'professor1@us.es', '$2b$12$eImiTXuWVxfM37uY4JANjOL.81F8RzW67.Z6j5j6J6J6J6J6J6J6J', 'Francisco', 'Javier Ramos', '1978-03-10', 'professor', TRUE),
+('11111111-0000-0000-0000-000000000003', 'professor1@us.es', '$2b$12$eImiTXuWVxfM37uY4JANjOL.81F8RzW67.Z6j5j6J6J6J6J6J6J6J', 'Nuria', 'Romero Palmas', '1978-03-10', 'professor', TRUE),
 -- Admin
 ('11111111-0000-0000-0000-000000000004', 'admin@us.es', '$2b$12$eImiTXuWVxfM37uY4JANjOL.81F8RzW67.Z6j5j6J6J6J6J6J6J6J', 'Admin', 'System', '1990-01-01', 'admin', TRUE);
 

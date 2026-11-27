@@ -109,12 +109,12 @@ INSERT INTO subjects (id, degree_id, code, name, academic_year, semester, ects) 
 -- Professors seed data
 -- --------------------------------------------------------
 INSERT INTO professors (id, name, surname, email, department) VALUES
-('44444444-0000-0000-0000-000000000001', 'Nuria', 'Romero Palmas', 'nuropal@us.es', 'Arquitectura y Tecnología de Computadores'),
-('44444444-0000-0000-0000-000000000002', 'Enrique', 'Peña Díaz', 'enpedi@us.es', 'Lenguajes y Sistemas Informáticos');
+('44444444-0000-0000-0000-000000000001', 'Nuria', 'Romero Palmas', 'professor1@us.es', 'Arquitectura y Tecnología de Computadores'),
+('44444444-0000-0000-0000-000000000002', 'Enrique', 'Peña Díaz', 'professor2@us.es', 'Lenguajes y Sistemas Informáticos');
 
 -- --------------------------------------------------------
 -- N:M Relationship: Subject - Professor
 -- --------------------------------------------------------
 INSERT INTO subject_teacher (professor_id, subject_id) VALUES
-('44444444-0000-0000-0000-000000000001', '33333333-0000-0000-0000-000000000002'), -- Romero in Bases de Datos
-('44444444-0000-0000-0000-000000000002', '33333333-0000-0000-0000-000000000003'); -- Resinas in Sistemas Distribuidos
+('44444444-0000-0000-0000-000000000001', '33333333-0000-0000-0000-000000000002'), 
+('44444444-0000-0000-0000-000000000002', '33333333-0000-0000-0000-000000000003'); 
