@@ -109,8 +109,8 @@ INSERT INTO subjects (id, degree_id, code, name, academic_year, semester, ects) 
 -- Professors seed data
 -- --------------------------------------------------------
 INSERT INTO professors (id, name, surname, email, department) VALUES
-('44444444-0000-0000-0000-000000000001', 'María del Carmen', 'Romero Ternero', 'mcromero@us.es', 'Arquitectura y Tecnología de Computadores'),
-('44444444-0000-0000-0000-000000000002', 'Manuel', 'Resinas Díaz', 'resinas@us.es', 'Lenguajes y Sistemas Informáticos');
+('44444444-0000-0000-0000-000000000001', 'Nuria', 'Romero Palmas', 'nuropal@us.es', 'Arquitectura y Tecnología de Computadores'),
+('44444444-0000-0000-0000-000000000002', 'Enrique', 'Peña Díaz', 'enpedi@us.es', 'Lenguajes y Sistemas Informáticos');
 
 -- --------------------------------------------------------
 -- N:M Relationship: Subject - Professor

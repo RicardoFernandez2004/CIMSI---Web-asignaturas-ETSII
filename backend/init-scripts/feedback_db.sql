@@ -1,4 +1,4 @@
--- 1. Crear la tabla
+
 CREATE TABLE IF NOT EXISTS reviews (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     student_id UUID NOT NULL,
@@ -14,11 +14,11 @@ CREATE TABLE IF NOT EXISTS reviews (
     CONSTRAINT unique_student_subject UNIQUE (student_id, subject_id)
 );
 
--- 2. Crear los índices (en Postgres van fuera del CREATE TABLE)
+
 CREATE INDEX IF NOT EXISTS idx_student_reviews ON reviews (student_id);
 CREATE INDEX IF NOT EXISTS idx_subject_reviews ON reviews (subject_id);
 
--- 3. Función y Trigger para simular el "ON UPDATE CURRENT_TIMESTAMP"
+
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
